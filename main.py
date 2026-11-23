@@ -48,6 +48,17 @@ ENTRY = (
 
 
 def main() -> None:
+    # Competition gate (RULES.txt): the entry must be a single line of
+    # 1-240 characters that is exactly one sentence. Fail loudly here
+    # instead of shipping an entry the judges would reject on format.
+    if not 1 <= len(ENTRY) <= 240:
+        raise ValueError(f"entry must be 1-240 characters, got {len(ENTRY)}")
+    # A period followed by a space (or a second terminator) would mean a
+    # second sentence; the single "." inside "make.fun" is not one.
+    if "\n" in ENTRY or ". " in ENTRY or not ENTRY.endswith("."):
+        raise ValueError("entry must be exactly one sentence on one line")
+    if ENTRY.count(".") != 2:  # one inside "make.fun", one terminal
+        raise ValueError("entry must be exactly one sentence on one line")
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8") as f:
         f.write(ENTRY)
